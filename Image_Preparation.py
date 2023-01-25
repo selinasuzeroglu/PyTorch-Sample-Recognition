@@ -74,4 +74,4 @@ transform = transforms.Compose([
 
 data = ImageDataset(csv, img_dir)
 image = data.__getitem__(0)
-j
+
