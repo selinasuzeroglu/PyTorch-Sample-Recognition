@@ -20,7 +20,7 @@ from PIL import Image
 
 
 
-# 0) prepare RGB images
+# 0) Prepare Images: Load and normalize the train and test data
 
 class ImageDataset(Dataset):
     def __init__(self, csv_file, img_dir):
@@ -35,12 +35,16 @@ class ImageDataset(Dataset):
         img_path = os.path.join(img_dir, img_name)
         image = Image.open(img_path)
         img_class = str(self.csv_file.iloc[idx, 1])
+
+        # transform image to tensor with torch.Size([3, 224, 224])
         transform = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor()])
+
         image_tensor = transform(image)
 
+        # separate image_tensor into R,G,B layers for subsequent normalization
         img_r = image_tensor[0, :, :]
         img_g = image_tensor[1, :, :]
         img_b = image_tensor[2, :, :]
@@ -61,17 +65,18 @@ class ImageDataset(Dataset):
         return image
 
 
-img_dir = '/PyTorch/Sample'
-csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0\\PyTorch\\file.csv'
-
-
-transform = transforms.Compose([
- transforms.Resize(256),
- transforms.CenterCrop(224),
- transforms.ToTensor()])
-
-
-
+img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0\\Main_Arduino'
+csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\PyTorch\\file.csv'
 data = ImageDataset(csv, img_dir)
-image = data.__getitem__(0)
+
+
+def show_image(idx):
+    image = data.__getitem__(idx)
+    csv_file = pd.read_csv(csv)
+    label = str(csv_file.iloc[idx, 1])
+    print(f"Label: {label}")
+    plt.imshow(image.permute(1, 2, 0))
+    plt.show()
+
+
 
