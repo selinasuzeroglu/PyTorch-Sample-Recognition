@@ -23,7 +23,9 @@ from PIL import Image
 
 class ImageDataset(Dataset):
     def __init__(self, csv_file, img_dir):
+        # csv_file with image name [0], and class label [1]
         self.csv_file = pd.read_csv(csv_file)
+        # image folder directory
         self.img_dir = img_dir
 
     def __len__(self):
@@ -31,9 +33,10 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = str(self.csv_file.iloc[idx, 0])
+        img_class = str(self.csv_file.iloc[idx, 1])
+        # img_dir + image_name should give path to each individual image, f.e. \\images\\example0.jpg
         img_path = os.path.join(img_dir, img_name)
         image = Image.open(img_path)
-        img_class = str(self.csv_file.iloc[idx, 1])
 
         # transform image to tensor with torch.Size([3, 224, 224])
         transform = transforms.Compose([
@@ -61,10 +64,12 @@ class ImageDataset(Dataset):
             std=[img_r_std, img_g_std, img_b_std])
 
         image = normalize(image_tensor)
-        return image
+
+        # ImageDataset.__getitem__() returns tuple([0], [1]) with [0] = image, [1] = class label
+        return image_tensor, img_class
 
 
-img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0\\Main_Arduino'
+img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0'
 csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\PyTorch\\file.csv'
 dataset = ImageDataset(csv, img_dir)  # dataset
 
@@ -78,39 +83,46 @@ def show_image(idx):
     plt.show()
 
 
-batch_size = 1
-num_workers = 1
-
 # train_dataset = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-train_dataset, test_dataset = torch.utils.data.random_split(dataset, [3, 1])
+train_dataset, test_dataset = torch.utils.data.random_split(dataset, [2, 1])
+
+tuple = dataset.__getitem__(0)
+
+print(type(tuple[1]))
 
 
-class Net(nn.Module):
-    ''' Models a simple Convolutional Neural Network'''
 
-    def __init__(self):
-        ''' initialize the network '''
-        super(Net, self).__init__()
-        # 3 input image channel, 6 output channels,
-        # 5x5 square convolution kernel
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        # Max pooling over a (2, 2) window
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)  # 5x5 from image dimension
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+# 2) Define Neural Network
+#
+# class Net(nn.Module):
+#     ''' Models a simple Convolutional Neural Network'''
+#
+#     def __init__(self):
+#         ''' initialize the network '''
+#         super(Net, self).__init__()
+#         # 3 input image channel, 6 output channels,
+#         # 5x5 square convolution kernel
+#         self.conv1 = nn.Conv2d(3, 6, 5)
+#         # Max pooling over a (2, 2) window
+#         self.pool = nn.MaxPool2d(2, 2)
+#         self.conv2 = nn.Conv2d(6, 16, 5)
+#         self.fc1 = nn.Linear(16 * 5 * 5, 120)  # 5x5 from image dimension
+#         self.fc2 = nn.Linear(120, 84)
+#         self.fc3 = nn.Linear(84, 10)
+#
+#     def forward(self, x):
+#         ''' the forward propagation algorithm '''
+#         x = self.pool(F.relu(self.conv1(x)))
+#         x = self.pool(F.relu(self.conv2(x)))
+#         x = x.view(-1, 16 * 5 * 5)
+#         x = F.relu(self.fc1(x))
+#         x = F.relu(self.fc2(x))
+#         x = self.fc3(x)
+#         return x
+#
+#
+# net = Net()
+#
+# criterion = nn.CrossEntropyLoss()
+# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-    def forward(self, x):
-        ''' the forward propagation algorithm '''
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
-net = Net()
-print(net)
