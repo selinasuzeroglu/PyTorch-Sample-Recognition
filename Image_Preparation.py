@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from torchvision.io import read_image
 from torch.utils.data import Dataset
-from torchvision import transforms
+from torchvision import *
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
@@ -12,11 +12,13 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision.utils
 
 import matplotlib
 
 import numpy as np
 from PIL import Image
+
 
 
 # 0) Prepare Images: Load and normalize the train and test data
@@ -59,70 +61,96 @@ class ImageDataset(Dataset):
         img_g_std = torch.std(img_g).item()
         img_b_std = torch.std(img_b).item()
 
-        normalize = transforms.Normalize(
-            mean=[img_r_mean, img_g_mean, img_b_mean],
-            std=[img_r_std, img_g_std, img_b_std])
+        normalize = transforms.Normalize((img_r_mean, img_g_mean, img_b_mean), (img_r_std, img_g_std, img_b_std))
+
+        # normalize = transforms.Normalize(
+        #     mean=[img_r_mean, img_g_mean, img_b_mean],
+        #     std=[img_r_std, img_g_std, img_b_std])
 
         image = normalize(image_tensor)
 
-        # ImageDataset.__getitem__() returns tuple([0], [1]) with [0] = image, [1] = class label
         return image_tensor, img_class
+
+        """ ImageDataset.__getitem__(idx=1) returns tuple([0], [1]) with [0] = torch.tensor for image, 
+        [1] = string for corresponding label """
 
 
 img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0'
 csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\PyTorch\\file.csv'
+
 dataset = ImageDataset(csv, img_dir)  # dataset
+"""For now, we are using one dataset for training and testing
+ Later we use one other dataset wit different directory consisting of testing images """
 
 
-def show_image(idx):
-    image = dataset.__getitem__(idx)
-    csv_file = pd.read_csv(csv)
-    label = str(csv_file.iloc[idx, 1])
-    print(f"Label: {label}")
-    plt.imshow(image.permute(1, 2, 0))
+train_dataloader = torch.utils.data.DataLoader(dataset, shuffle=True)
+"""torch.Size([1, 3, 224, 224]) for batch_size = 1, chanel_input = 3 (RGB), pixel_height = 224, pixel_width = 224"""
+# test_dataloader = torch.utils.data.DataLoader(dataset, shuffle=False)
+# train_dataset, test_dataset = torch.utils.data.random_split(dataset, [2, 1])
+
+dataiter = iter(train_dataloader)  # creating iterator which represents dataset
+images, labels = next(dataiter)   # returning successive items in the iterator, i.e. tuple from dataset
+
+def imshow(img):
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
-
-# train_dataset = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-train_dataset, test_dataset = torch.utils.data.random_split(dataset, [2, 1])
-
-tuple = dataset.__getitem__(0)
-
-print(type(tuple[1]))
 
 
 
 # 2) Define Neural Network
-#
-# class Net(nn.Module):
-#     ''' Models a simple Convolutional Neural Network'''
-#
-#     def __init__(self):
-#         ''' initialize the network '''
-#         super(Net, self).__init__()
-#         # 3 input image channel, 6 output channels,
-#         # 5x5 square convolution kernel
-#         self.conv1 = nn.Conv2d(3, 6, 5)
-#         # Max pooling over a (2, 2) window
-#         self.pool = nn.MaxPool2d(2, 2)
-#         self.conv2 = nn.Conv2d(6, 16, 5)
-#         self.fc1 = nn.Linear(16 * 5 * 5, 120)  # 5x5 from image dimension
-#         self.fc2 = nn.Linear(120, 84)
-#         self.fc3 = nn.Linear(84, 10)
-#
-#     def forward(self, x):
-#         ''' the forward propagation algorithm '''
-#         x = self.pool(F.relu(self.conv1(x)))
-#         x = self.pool(F.relu(self.conv2(x)))
-#         x = x.view(-1, 16 * 5 * 5)
-#         x = F.relu(self.fc1(x))
-#         x = F.relu(self.fc2(x))
-#         x = self.fc3(x)
-#         return x
-#
-#
-# net = Net()
-#
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        #x = self.pool(F.relu(self.conv1(x)))
+        #x = self.pool(F.relu(self.conv2(x)))
+        #x = torch.flatten(x, 1) # flatten all dimensions except batch
+        #x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        # x = self.fc3(x)
+        return x.size()
+
+
+net = Net()
+
+print(next(dataiter)[0])
+
+
 # criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
+# for epoch in range(2):  # loop over the dataset multiple times
+#
+#     running_loss = 0.0
+#     for i, data in enumerate(train_dataloader, 0):
+#         # get the inputs; data is a list of [inputs, labels]
+#         inputs, labels = data
+#
+#         # zero the parameter gradients
+#         optimizer.zero_grad()
+#
+#         # forward + backward + optimize
+#         outputs = net(inputs)
+#         loss = criterion(outputs, labels)
+#         loss.backward()
+#         optimizer.step()
+#
+#         # print statistics
+#         running_loss += loss.item()
+#         if i in [0, 2]:
+#             print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+#             running_loss = 0.0
+#
+# print('Finished Training')
