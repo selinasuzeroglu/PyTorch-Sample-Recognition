@@ -14,6 +14,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.utils
 
+
 import matplotlib
 
 import numpy as np
@@ -35,7 +36,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_name = str(self.csv_file.iloc[idx, 0])
-        img_class = str(self.csv_file.iloc[idx, 1])
+        img_class = int(self.csv_file.iloc[idx, 1])
         # img_dir + image_name should give path to each individual image, f.e. \\images\\example0.jpg
         img_path = os.path.join(img_dir, img_name)
         image = Image.open(img_path)
@@ -76,7 +77,7 @@ class ImageDataset(Dataset):
 with [0] = torch.tensor for image, [1] = string for corresponding label """
 
 
-img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0'
+img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0\\Main_Arduino\\Photos'
 csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\PyTorch\\file.csv'
 
 dataset = ImageDataset(csv, img_dir)  # dataset
@@ -124,17 +125,13 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
+
 for epoch in range(2):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(train_dataloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-
-        # zero the parameter gradients
-        optimizer.zero_grad()
-
-        # forward + backward + optimize
         outputs = net(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
@@ -142,8 +139,9 @@ for epoch in range(2):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if i in [0, 2]:
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-            running_loss = 0.0
+        print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+        running_loss = 0.0
 
-print('Finished Training')
+
+
+

@@ -1,4 +1,5 @@
 image, class
-Main_Arduino_0.jpg, sample0
-Main_Arduino_1.jpg, sample1
-Main_Arduino_2.jpg, sample2
+gelb.RAW, 0
+grau.RAW, 1
+orange.RAW, 2
+yellow.RAW, 0
