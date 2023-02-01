@@ -81,6 +81,7 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 3)
+        # adjust output chanel to number of labels, here #labels = 3
         self.adapt = nn.AdaptiveAvgPool2d(5)
 
     def forward(self, x):
