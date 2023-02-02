@@ -5,6 +5,7 @@ from torchvision import *
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
+import torchvision
 
 # 0) Prepare Images: Load and normalize the train and test data
 
@@ -32,26 +33,9 @@ class ImageDataset(Dataset):
 
 transform = transforms.Compose([
     transforms.Resize(256),
-    transforms.CenterCrop(200)])
-    #transforms.ToTensor()])
+    transforms.CenterCrop(224),
+    transforms.ToTensor()])
 # transform image to tensor with torch.Size([3, 224, 224])
-
-
-
-img_dir = 'C:\\Users\\ssuz0008\\PycharmProjects\\UVVis_3.0\\Main_Arduino\\Photos'
-csv = 'C:\\Users\\ssuz0008\\PycharmProjects\\PyTorch\\file.csv'
-
-batch_size = 1
-
-
-dataset = ImageDataset(csv, img_dir, transform=transform)
-
-def imshow(img):
-    img = img
-    npimg = img.numpy()  # convert to numpy objects
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
-
 
 
 

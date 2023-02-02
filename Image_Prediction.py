@@ -48,7 +48,7 @@ for batch_size = 1, in_channels = 3 (RGB), pixel_height = 224, pixel_width = 224
 and labels.Size([1]) for integers representing class label"""
 
 
-classes = ('gelb', 'grau', 'orange')
+classes = ('blue', 'green', 'pink', 'red')
 
 
 # function for showing images:
@@ -80,8 +80,8 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 3)
-        # adjust output chanel to number of labels, here #labels = 3
+        self.fc3 = nn.Linear(84, 4)
+        # adjust output chanel to number of labels, here #labels = 4
         self.adapt = nn.AdaptiveAvgPool2d(5)
 
     def forward(self, x):
