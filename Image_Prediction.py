@@ -1,23 +1,11 @@
-import os
-import pandas as pd
-import torch
-from torchvision.io import read_image
 from torch.utils.data import Dataset
 from torchvision import *
-from torchvision import datasets
-from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
-from pathlib import Path
-from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.utils
-
-import matplotlib
-
 import numpy as np
-from PIL import Image
 from Custom_Dataset import ImageDataset, transform
 
 # Set Device
@@ -48,7 +36,7 @@ for batch_size = 1, in_channels = 3 (RGB), pixel_height = 224, pixel_width = 224
 and labels.Size([1]) for integers representing class label"""
 
 
-classes = ('blue', 'green', 'pink', 'red')
+classes = ('sprinkle', 'plane')
 
 
 # function for showing images:
@@ -80,7 +68,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 4)
+        self.fc3 = nn.Linear(84, 2)
         # adjust output chanel to number of labels, here #labels = 4
         self.adapt = nn.AdaptiveAvgPool2d(5)
 
