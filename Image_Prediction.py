@@ -36,7 +36,7 @@ for batch_size = 1, in_channels = 3 (RGB), pixel_height = 224, pixel_width = 224
 and labels.Size([1]) for integers representing class label"""
 
 
-classes = ('sprinkle', 'plane')
+classes = ('plane', 'sprinkle')
 
 
 # function for showing images:
