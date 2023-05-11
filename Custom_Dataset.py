@@ -36,29 +36,3 @@ transform = transforms.Compose([
     transforms.CenterCrop(224),
     transforms.ToTensor()])
 # transform image to tensor with torch.Size([3, 224, 224])
-
-
-
-
-
-
-# # separate image_tensor into R,G,B layers for subsequent normalization
-# img_r = image_tensor[0, :, :]
-# img_g = image_tensor[1, :, :]
-# img_b = image_tensor[2, :, :]
-#
-# img_r_mean = torch.mean(img_r).item()
-# img_g_mean = torch.mean(img_g).item()
-# img_b_mean = torch.mean(img_b).item()
-#
-# img_r_std = torch.std(img_r).item()
-# img_g_std = torch.std(img_g).item()
-# img_b_std = torch.std(img_b).item()
-#
-# normalize = transforms.Normalize((img_r_mean, img_g_mean, img_b_mean), (img_r_std, img_g_std, img_b_std))
-#
-# # normalize = transforms.Normalize(
-# #     mean=[img_r_mean, img_g_mean, img_b_mean],
-# #     std=[img_r_std, img_g_std, img_b_std])
-#
-# image = normalize(image_tensor)
