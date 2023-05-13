@@ -6,6 +6,3 @@ This repository contains code for labeling samples using image recognition techn
 
 To use this code, ensure that you have PyTorch installed on your system. Clone the repository and run the main script. Provide the path to the high-resolution Nikon images as input, and the code will label the samples accordingly. The labeled samples can be further analyzed for automated identification of different sample characteristics.
 
-## License
-
-This project is licensed under the MIT License. Please refer to the [LICENSE](LICENSE) file for more information.
